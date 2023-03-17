@@ -30,7 +30,7 @@ export default function Home() {
           <li key={person.id} className={styles.whoListItem}>
             <Link
               className={index % 2 ? styles.whoLinkEven : styles.whoLinkOdd}
-              href="#"
+              href={`/party-people/${person.id}`}
             >
               {person.name}
             </Link>
