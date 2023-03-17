@@ -1,18 +1,30 @@
-import './globals.css'
+import { Lobster } from "next/font/google";
+import "./globals.css";
+import styles from "./layout.module.css"
 
 export const metadata = {
-  title: 'Eurovision Airtable',
-  description: 'Connects React frontend to an Airtable data for local Eurovision party',
-}
+  title: "Eurovision Airtable",
+  description:
+    "Connects React frontend to an Airtable data for local Eurovision party",
+};
+
+const lobster = Lobster({ subsets: ["latin"], weight: "400" });
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <div className={styles.hero}>
+          <h1 className={`${lobster.className} ${styles.heading}`}>
+            Eurovision Airtable
+          </h1>
+          {children}
+        </div>
+      </body>
     </html>
-  )
+  );
 }
