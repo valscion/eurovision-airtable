@@ -2,20 +2,31 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "./page.module.css";
 
-// This list of people should be actual people who will
-// attend the eurovision party
-const people = [
-  { name: "Måns", id: "abc" },
-  { name: "Abba", id: "def" },
-  { name: "Måneskin", id: "i342" },
-  { name: "Loreen", id: "sdk" },
-  { name: "Lordi", id: "23784" },
-  { name: "Käärijä", id: "aslkf" },
-  { name: "Tix", id: "ogiu" },
-  { name: "The Roop", id: "dkhjg" },
-].sort((a, b) => a.name.localeCompare(b.name));
+type Person = {
+  name: string;
+  id: string;
+};
+type People = Array<Person>;
 
-export default function Home() {
+async function getPeopleFromAirtable(): Promise<People> {
+  const res = await fetch("http://localhost:3000/api/hello", {
+    cache: "no-store",
+  });
+  // The return value is *not* serialized
+  // You can return Date, Map, Set, etc.
+
+  // Recommendation: handle errors
+  if (!res.ok) {
+    // This will activate the closest `error.js` Error Boundary
+    throw new Error("Failed to fetch data");
+  }
+
+  return res.json();
+}
+
+export default async function Home() {
+  const people = await getPeopleFromAirtable();
+
   return (
     <>
       <h2 className={styles.whoHeading}>Who are you?</h2>
