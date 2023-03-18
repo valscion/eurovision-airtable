@@ -22,3 +22,5 @@ jobs:
         run: npm ci
       - name: Test prettier diff
         run: npx --no-install prettier --check .
+      - name: Run lint
+        run: npm run lint
