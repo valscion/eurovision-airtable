@@ -71,5 +71,5 @@
   composes: blueGradient whoButtonBase;
 }
 .whoLinkEven {
-  composes: redGradient  whoButtonBase;
+  composes: redGradient whoButtonBase;
 }
