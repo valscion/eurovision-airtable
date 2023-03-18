@@ -10,12 +10,12 @@ interface Props {
   name: string;
 }
 
-interface IList {
+interface List {
   id: string;
   title: string;
 }
 
-const list: IList[] = [
+const list: List[] = [
   {
     id: "1",
     title: "First",
@@ -31,13 +31,13 @@ const list: IList[] = [
 ];
 
 export const MyComponent = ({ name }: Props) => {
-  const [items, setItems] = React.useState<IList[]>(list);
+  const [items, setItems] = React.useState<List[]>(list);
 
   const dragHandler = (result: any) => {
     if (!result.destination) {
       return;
     }
-    let list: IList[] = [...items];
+    let list: List[] = [...items];
     const [reorderedItem] = list.splice(result.source.index, 1);
     list.splice(result.destination.index, 0, reorderedItem);
     setItems(list);
@@ -47,7 +47,7 @@ export const MyComponent = ({ name }: Props) => {
       <Droppable droppableId="droppable">
         {(provided: DroppableProvided) => (
           <ul {...provided.droppableProps} ref={provided.innerRef}>
-            {items.map((item: IList, index: number) => (
+            {items.map((item: List, index: number) => (
               <Draggable key={item.id} draggableId={item.id} index={index}>
                 {(provided: DraggableProvided) => (
                   <li
