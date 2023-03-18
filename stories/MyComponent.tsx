@@ -61,7 +61,6 @@ export const MyComponent = ({ name }: Props) => {
                 )}
               </Draggable>
             ))}
-            {provided.placeholder}
           </ul>
         )}
       </Droppable>
