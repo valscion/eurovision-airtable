@@ -9,7 +9,7 @@
 }
 
 .whoList {
-  composes: base;
+  composes:   base;
   list-style-type: none;
 }
 

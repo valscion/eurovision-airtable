@@ -4,5 +4,7 @@ type Props = {
 };
 
 export default function PartyPersonPage({ params }: Props) {
-  return <div>PartyPerson: {params.partyPerson}</div>;
+  return <div>PartyPerson: {
+    
+    params.partyPerson}</div>;
 }
