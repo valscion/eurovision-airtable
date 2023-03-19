@@ -17,11 +17,9 @@
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "[tailwindcss]": {
-    // By default VS Code will not trigger completions when editing "string"
-    // content, for example within JSX attribute values.
-    "editor.quickSuggestions": {
-      "strings": true
-    }
+  // By default VS Code will not trigger completions when editing "string"
+  // content, for example within JSX attribute values.
+  "editor.quickSuggestions": {
+    "strings": true
   }
 }
