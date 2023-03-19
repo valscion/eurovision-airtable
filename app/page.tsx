@@ -9,7 +9,7 @@ type Person = {
 type People = Array<Person>;
 
 async function getPeopleFromAirtable(): Promise<People> {
-  const res = await fetch("http://localhost:3000/api/hello", {
+  const res = await fetch("http://localhost:3000/api/airtable-party-people", {
     cache: "no-store",
   });
   // The return value is *not* serialized
