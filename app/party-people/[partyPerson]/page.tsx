@@ -4,5 +4,9 @@ type Props = {
 };
 
 export default function PartyPersonPage({ params }: Props) {
-  return <div>PartyPerson: {params.partyPerson}</div>;
+  return (
+    <div className="text-3xl font-bold underline">
+      PartyPerson: {params.partyPerson}
+    </div>
+  );
 }
