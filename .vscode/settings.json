@@ -1,6 +1,10 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "css.lint.validProperties": ["composes"],
   "[javascript]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -12,5 +16,12 @@
   "[typescriptreact]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[tailwindcss]": {
+    // By default VS Code will not trigger completions when editing "string"
+    // content, for example within JSX attribute values.
+    "editor.quickSuggestions": {
+      "strings": true
+    }
   }
 }

@@ -1,0 +1,11 @@
+{
+  // List of extensions which should be recommended for users of this workspace.
+  "recommendations": [
+    // Tailwind CSS IntelliSense enhances the Tailwind development experience by
+    // providing Visual Studio Code users with advanced features such as
+    // autocomplete, syntax highlighting, and linting.
+    "bradlc.vscode-tailwindcss",
+    // Code formatter using
+    "esbenp.prettier-vscode"
+  ]
+}
