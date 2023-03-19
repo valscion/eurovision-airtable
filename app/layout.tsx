@@ -19,12 +19,10 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <div className={styles.appWrapper}>
-          <div className={styles.hero}>
-            <h1 className={`${lobster.className} ${styles.heading}`}>
-              Viisukatsomo
-            </h1>
-            {children}
-          </div>
+          <h1 className={`${lobster.className} ${styles.heading}`}>
+            Viisukatsomo
+          </h1>
+          {children}
         </div>
       </body>
     </html>

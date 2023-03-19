@@ -9,7 +9,7 @@ type Person = {
 type People = Array<Person>;
 
 async function getPeopleFromAirtable(): Promise<People> {
-  const res = await fetch("http://localhost:3000/api/hello", {
+  const res = await fetch("http://localhost:3000/api/airtable-party-people", {
     cache: "no-store",
   });
   // The return value is *not* serialized
@@ -28,7 +28,7 @@ export default async function Home() {
   const people = await getPeopleFromAirtable();
 
   return (
-    <>
+    <div className="flex flex-col items-center justify-center">
       <h2 className={styles.whoHeading}>Who are you?</h2>
       <ul className={styles.whoList}>
         {people.map((person, index) => (
@@ -42,6 +42,6 @@ export default async function Home() {
           </li>
         ))}
       </ul>
-    </>
+    </div>
   );
 }
