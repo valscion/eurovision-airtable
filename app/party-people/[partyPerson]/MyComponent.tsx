@@ -46,7 +46,11 @@ export const MyComponent = ({ name }: Props) => {
     <DragDropContext onDragEnd={dragHandler}>
       <Droppable droppableId="droppable">
         {(provided: DroppableProvided) => (
-          <ul {...provided.droppableProps} ref={provided.innerRef}>
+          <ul
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+            className="text-3xl font-bold"
+          >
             {items.map((item: List, index: number) => (
               <Draggable key={item.id} draggableId={item.id} index={index}>
                 {(provided: DraggableProvided) => (
