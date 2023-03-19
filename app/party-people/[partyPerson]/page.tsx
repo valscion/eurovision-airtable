@@ -43,10 +43,19 @@ export default async function PartyPersonPage({ params }: Props) {
 
   return (
     <>
-      <div className="text-3xl font-bold underline">
+      <div className="text-3xl font-bold">
         PartyPerson: {params.partyPerson}
       </div>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
+      {data.map((record) => (
+        <div key={record.id} className="grid">
+          <h2 className="text-2xl text-blue-500">
+            {record.fields.Flag} {record.fields.Country}
+          </h2>
+          <p className="px-4">
+            {record.fields.Artist} — {record.fields.Song}
+          </p>
+        </div>
+      ))}
     </>
   );
 }
