@@ -28,7 +28,7 @@ export default async function Home() {
   const people = await getPeopleFromAirtable();
 
   return (
-    <>
+    <div className="flex flex-col items-center justify-center">
       <h2 className={styles.whoHeading}>Who are you?</h2>
       <ul className={styles.whoList}>
         {people.map((person, index) => (
@@ -42,6 +42,6 @@ export default async function Home() {
           </li>
         ))}
       </ul>
-    </>
+    </div>
   );
 }
