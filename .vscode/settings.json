@@ -4,6 +4,7 @@
   "files.associations": {
     "*.css": "tailwindcss"
   },
+  "css.lint.validProperties": ["composes"],
   "[javascript]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
