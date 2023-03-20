@@ -29,9 +29,11 @@ const reorder = (list: any[], startIndex: number, endIndex: number): any[] => {
 };
 
 export const Ranking = ({ items: originalItems }: Props) => {
+  const [isReordering, setIsReordering] = React.useState(false);
+
   const [items, setItems] = React.useState<State>(
     originalItems.reduce((acc, item, index) => {
-      const groupName = `index${Math.floor(index / 7)}`;
+      const groupName = `idx_${Math.floor(index / 7)}`;
       if (!acc[groupName]) {
         acc[groupName] = [];
       }
@@ -82,48 +84,86 @@ export const Ranking = ({ items: originalItems }: Props) => {
     return;
   };
   return (
-    <DragDropContext onDragEnd={dragHandler}>
-      <div className="flex h-full flex-shrink-0">
-        {Object.entries(items).map(([columnId, list]) => (
-          <Droppable droppableId={columnId} key={columnId}>
-            {(provided: DroppableProvided) => (
-              <div
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                className="w-82 mr-6 flex flex-shrink-0 flex-col"
-              >
-                <div className="w-32 pb-2">{columnId}</div>
-                {list.map((item, index) => (
-                  <Draggable key={item.id} draggableId={item.id} index={index}>
-                    {(provided: DraggableProvided) => (
-                      <div
-                        {...provided.draggableProps}
-                        ref={provided.innerRef}
-                        {...provided.dragHandleProps}
-                      >
-                        <SingleItem item={item} />
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-              </div>
-            )}
-          </Droppable>
-        ))}
-      </div>
-    </DragDropContext>
+    <>
+      <label className="block pb-8">
+        <input
+          type="checkbox"
+          className="mr-2"
+          onChange={(evt) => setIsReordering(evt.currentTarget.checked)}
+        />
+        Toggle small UI
+      </label>
+      <DragDropContext onDragEnd={dragHandler}>
+        <div
+          className={`ml-4 mr-4 flex h-full w-full flex-shrink-0 overflow-auto`}
+        >
+          {Object.entries(items).map(([columnId, list]) => (
+            <Droppable droppableId={columnId} key={columnId}>
+              {(provided: DroppableProvided) => (
+                <div
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  className={`${
+                    isReordering ? "mr-4 w-8" : "w-82 mr-6"
+                  } flex flex-shrink-0 flex-col`}
+                >
+                  <div className="w-32 pb-2">{columnId}</div>
+                  {list.map((item, index) => (
+                    <Draggable
+                      key={item.id}
+                      draggableId={item.id}
+                      index={index}
+                    >
+                      {(provided: DraggableProvided, draggableSnapshot) => (
+                        <div
+                          {...provided.draggableProps}
+                          ref={provided.innerRef}
+                          {...provided.dragHandleProps}
+                        >
+                          <SingleItem
+                            item={item}
+                            isReordering={isReordering}
+                            isDragging={draggableSnapshot.isDragging}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                </div>
+              )}
+            </Droppable>
+          ))}
+        </div>
+      </DragDropContext>
+    </>
   );
 };
 
-const SingleItem = ({ item }: { item: AirtableItem }) => (
+const SingleItem = ({
+  item,
+  isReordering,
+  isDragging,
+}: {
+  item: AirtableItem;
+  isReordering: boolean;
+  isDragging: boolean;
+}) => (
   <>
-    <div className="mb-4 flex w-48 flex-col rounded border-2 border-blue-900 p-2">
+    <div
+      className={`flex ${
+        isReordering ? "mb-2 w-11 text-xl" : "mb-4 w-48"
+      } flex-col rounded border-2 border-blue-900 p-2 ${
+        isDragging && "bg-slate-800"
+      }`}
+    >
       <div className="font-medium text-gray-200">
-        {item.fields.Flag} {item.fields.Country}
+        {item.fields.Flag} {!isReordering && item.fields.Country}
       </div>
-      <div className="mt-2 text-sm text-green-300">
-        {item.fields.Artist} — {item.fields.Song}
-      </div>
+      {!isReordering && (
+        <div className="mt-2 text-sm text-green-300">
+          {item.fields.Artist} — {item.fields.Song}
+        </div>
+      )}
     </div>
   </>
 );

@@ -1,5 +1,5 @@
 import { type AirtableItem } from "@/app/types/airtable";
-import { MyComponent } from "./Ranking";
+import { Ranking } from "./Ranking";
 
 type Params = { partyPerson: string };
 type Props = {
@@ -32,7 +32,7 @@ export default async function PartyPersonPage({ params }: Props) {
       <div className="text-3xl font-bold">
         PartyPerson: {params.partyPerson}
       </div>
-      <MyComponent items={data} />
+      <Ranking items={data} />
     </>
   );
 }
