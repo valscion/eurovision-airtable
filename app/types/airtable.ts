@@ -1,0 +1,16 @@
+export type AirtableItem = {
+  /** The ID representing this record in Airtable */
+  id: string;
+  fields: {
+    Country: string;
+    Ordinal: number;
+    /** Duration is in seconds */
+    Duration: number;
+    Artist: string;
+    Song: string;
+    /** Flag is the emoji representation of the country */
+    Flag: string;
+    "Video type": string;
+    YouTube: string;
+  };
+};

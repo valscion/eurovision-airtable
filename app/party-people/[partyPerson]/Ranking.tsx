@@ -1,3 +1,7 @@
+"use client";
+
+import { type AirtableItem } from "@/app/types/airtable";
+
 import React from "react";
 import {
   DragDropContext,
@@ -7,37 +11,17 @@ import {
   DroppableProvided,
 } from "react-beautiful-dnd";
 interface Props {
-  name: string;
+  items: Array<AirtableItem>;
 }
 
-interface List {
-  id: string;
-  title: string;
-}
-
-const list: List[] = [
-  {
-    id: "1",
-    title: "First",
-  },
-  {
-    id: "2",
-    title: "Second",
-  },
-  {
-    id: "3",
-    title: "Third",
-  },
-];
-
-export const MyComponent = ({ name }: Props) => {
-  const [items, setItems] = React.useState<List[]>(list);
+export const Ranking = ({ items: originalItems }: Props) => {
+  const [items, setItems] = React.useState<AirtableItem[]>(originalItems);
 
   const dragHandler = (result: any) => {
     if (!result.destination) {
       return;
     }
-    let list: List[] = [...items];
+    let list = [...items];
     const [reorderedItem] = list.splice(result.source.index, 1);
     list.splice(result.destination.index, 0, reorderedItem);
     setItems(list);
@@ -46,12 +30,8 @@ export const MyComponent = ({ name }: Props) => {
     <DragDropContext onDragEnd={dragHandler}>
       <Droppable droppableId="droppable">
         {(provided: DroppableProvided) => (
-          <ul
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-            className="text-3xl font-bold"
-          >
-            {items.map((item: List, index: number) => (
+          <ul {...provided.droppableProps} ref={provided.innerRef}>
+            {items.map((item, index) => (
               <Draggable key={item.id} draggableId={item.id} index={index}>
                 {(provided: DraggableProvided) => (
                   <li
@@ -60,7 +40,12 @@ export const MyComponent = ({ name }: Props) => {
                     ref={provided.innerRef}
                     {...provided.dragHandleProps}
                   >
-                    {item.title}
+                    <h2 className="text-2xl text-blue-500">
+                      {item.fields.Flag} {item.fields.Country}
+                    </h2>
+                    <p className="px-4">
+                      {item.fields.Artist} — {item.fields.Song}
+                    </p>
                   </li>
                 )}
               </Draggable>
