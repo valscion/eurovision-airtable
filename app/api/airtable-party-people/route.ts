@@ -44,14 +44,16 @@ type SingleSelectField = {
   type: "singleSelect";
   name: string;
   description?: string;
-  options: Array<{
-    id: string;
-    // More specific colors can be got from
-    // https://airtable.com/developers/web/api/field-model#select
-    // but for our uses, we don't care.
-    color?: string;
-    name: string;
-  }>;
+  options: {
+    choices: Array<{
+      id: string;
+      // More specific colors can be got from
+      // https://airtable.com/developers/web/api/field-model#select
+      // but for our uses, we don't care.
+      color?: string;
+      name: string;
+    }>;
+  };
 };
 
 type TableField = {
@@ -102,7 +104,7 @@ export async function GET(request: Request) {
     acc.push({
       id: field.id,
       name: field.name,
-      options: field.options,
+      options: field.options.choices,
     });
     return acc;
   }, [] as AirtablePerson[]);
