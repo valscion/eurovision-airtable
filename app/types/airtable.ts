@@ -14,3 +14,9 @@ export type AirtableItem = {
     YouTube: string;
   };
 };
+
+export type AirtablePerson = {
+  id: string;
+  name: string;
+  options: Array<{ id: string; name: string }>;
+};

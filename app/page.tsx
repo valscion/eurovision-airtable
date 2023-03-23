@@ -1,14 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./page.module.css";
+import { AirtablePerson } from "./types/airtable";
 
-type Person = {
-  name: string;
-  id: string;
-};
-type People = Array<Person>;
-
-async function getPeopleFromAirtable(): Promise<People> {
+async function getPeopleFromAirtable(): Promise<AirtablePerson[]> {
   const res = await fetch("http://localhost:3000/api/airtable-party-people", {
     cache: "no-store",
   });
