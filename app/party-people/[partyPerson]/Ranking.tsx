@@ -42,7 +42,7 @@ export const Ranking = ({ records: originalRecords, person }: Props) => {
       };
     },
     {
-      Uncategorized: originalRecords.filter(
+      NOT_RANKED: originalRecords.filter(
         // @ts-ignore -- This works but I don't know TS well enough to permit this
         (record) => record.fields[person.name] === undefined
       ),
@@ -117,7 +117,13 @@ export const Ranking = ({ records: originalRecords, person }: Props) => {
                     isReordering ? "mr-4 w-8" : "w-82 mr-6"
                   } flex flex-shrink-0 flex-col`}
                 >
-                  <div className="w-32 pb-2">{columnId}</div>
+                  <div className="w-32 pb-2">
+                    {columnId === "NOT_RANKED"
+                      ? isReordering
+                        ? "???"
+                        : "Not ranked"
+                      : columnId}
+                  </div>
                   {list.map((record, index) => (
                     <Draggable
                       key={record.id}
