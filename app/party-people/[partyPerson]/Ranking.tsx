@@ -147,7 +147,10 @@ export const Ranking = ({ records: originalRecords, person }: Props) => {
       [] as AirtableUpdateRecordPayload[]
     );
     setRequestState({ type: "SENDING" });
-    const updatePromise = updateRecordVotes(updatePayload);
+    const updatePromise = updateRecordVotes({
+      rootUrl: location.origin,
+      updates: updatePayload,
+    });
     updatePromise
       .then(() => {
         setRequestState({ type: "SUCCESS" });
