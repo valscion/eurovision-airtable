@@ -1,6 +1,6 @@
 "use client";
 
-import { type AirtableRecord } from "@/app/types/airtable";
+import { type AirtablePerson, type AirtableRecord } from "@/app/types/airtable";
 
 import React from "react";
 import {
@@ -13,6 +13,7 @@ import {
 } from "react-beautiful-dnd";
 interface Props {
   records: Array<AirtableRecord>;
+  person: AirtablePerson;
 }
 
 type State = {
@@ -28,19 +29,28 @@ const reorder = (list: any[], startIndex: number, endIndex: number): any[] => {
   return result;
 };
 
-export const Ranking = ({ records: originalRecords }: Props) => {
+export const Ranking = ({ records: originalRecords, person }: Props) => {
+  const initialGroups = person.options.reduce(
+    (acc, option) => {
+      const recordsInThisGroup = originalRecords.filter(
+        // @ts-ignore -- This works but I don't know TS well enough to permit this
+        (record) => record.fields[person.name] === option.name
+      );
+      return {
+        ...acc,
+        [option.name]: recordsInThisGroup,
+      };
+    },
+    {
+      Uncategorized: originalRecords.filter(
+        // @ts-ignore -- This works but I don't know TS well enough to permit this
+        (record) => record.fields[person.name] === undefined
+      ),
+    }
+  );
   const [isReordering, setIsReordering] = React.useState(false);
 
-  const [records, setRecords] = React.useState<State>(
-    originalRecords.reduce((acc, record, index) => {
-      const groupName = `idx_${Math.floor(index / 7)}`;
-      if (!acc[groupName]) {
-        acc[groupName] = [];
-      }
-      acc[groupName].push(record);
-      return acc;
-    }, {} as State)
-  );
+  const [records, setRecords] = React.useState<State>(initialGroups);
 
   const dragHandler = (result: DropResult) => {
     if (!result.destination) {

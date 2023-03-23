@@ -43,7 +43,7 @@ export default async function PartyPersonPage({ params }: Props) {
       <div className="mb-8 flex flex-col items-center">
         <div className="text-3xl font-bold">{person.name}'s picks</div>
       </div>
-      <Ranking records={records} />
+      <Ranking records={records} person={person} />
     </>
   );
 }

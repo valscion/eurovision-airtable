@@ -4,7 +4,35 @@ import { Ranking } from "./Ranking";
 // More on how to set up stories at: https://storybook.js.org/docs/7.0/react/writing-stories/introduction
 const meta: Meta<typeof Ranking> = {
   component: Ranking,
-  args: { records: [] },
+  args: {
+    records: [],
+    person: {
+      id: "someId123",
+      name: "Ranker",
+      options: [
+        {
+          id: "selx2unbJlKpTWOVe",
+          name: "🤩",
+        },
+        {
+          id: "selnOCupL0qaO7Dmu",
+          name: "😁",
+        },
+        {
+          id: "selLH1BrM0J9Z7gXL",
+          name: "🙂",
+        },
+        {
+          id: "selrJ1M3MkOUuip8g",
+          name: "😐",
+        },
+        {
+          id: "sel5epwTJ63GGAv8d",
+          name: "😖",
+        },
+      ],
+    },
+  },
 };
 
 export default meta;
