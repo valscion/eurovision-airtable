@@ -4,9 +4,7 @@ import styles from "./page.module.css";
 import { AirtablePerson } from "./types/airtable";
 
 async function getPeopleFromAirtable(): Promise<AirtablePerson[]> {
-  const res = await fetch("http://localhost:3000/api/airtable-party-people", {
-    cache: "no-store",
-  });
+  const res = await fetch("http://localhost:3000/api/airtable-party-people");
   // The return value is *not* serialized
   // You can return Date, Map, Set, etc.
 
