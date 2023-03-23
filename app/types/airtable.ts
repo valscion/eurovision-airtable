@@ -20,3 +20,9 @@ export type AirtablePerson = {
   name: string;
   options: Array<{ id: string; name: string }>;
 };
+
+export type AirtableUpdateRecordPayload = {
+  recordId: string;
+  field: string;
+  choiceId: string | null;
+};

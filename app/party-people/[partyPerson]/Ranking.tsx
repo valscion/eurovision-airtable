@@ -1,6 +1,11 @@
 "use client";
 
-import { type AirtablePerson, type AirtableRecord } from "@/app/types/airtable";
+import { updateRecordVotes } from "@/app/apiCalls";
+import {
+  AirtableUpdateRecordPayload,
+  type AirtablePerson,
+  type AirtableRecord,
+} from "@/app/types/airtable";
 
 import React from "react";
 import {
@@ -19,6 +24,13 @@ interface Props {
 type State = {
   [key: string]: AirtableRecord[];
 };
+
+type RequestState =
+  | { type: "FRESH" }
+  | { type: "DIRTY" }
+  | { type: "SENDING" }
+  | { type: "ERROR"; message: string }
+  | { type: "SUCCESS" };
 
 // a little function to help us with reordering the result
 const reorder = (list: any[], startIndex: number, endIndex: number): any[] => {
@@ -49,10 +61,17 @@ export const Ranking = ({ records: originalRecords, person }: Props) => {
     }
   );
   const [isReordering, setIsReordering] = React.useState(false);
+  const [requestState, setRequestState] = React.useState<RequestState>({
+    type: "FRESH",
+  });
 
   const [records, setRecords] = React.useState<State>(initialGroups);
 
   const dragHandler = (result: DropResult) => {
+    if (requestState.type === "SENDING") {
+      // Abort drag handling when request is in progress
+      return;
+    }
     if (!result.destination) {
       return;
     }
@@ -91,11 +110,53 @@ export const Ranking = ({ records: originalRecords, person }: Props) => {
       [destination.droppableId]: next,
     };
     setRecords(resultTwo);
+    setRequestState({ type: "DIRTY" });
     return;
   };
+
+  const sendUpdateVotes = () => {
+    const updatePayload = Object.entries(records).reduce(
+      (acc, [category, recordsInCategory]) => {
+        if (category === "NOT_RANKED") {
+          recordsInCategory.forEach((record) => {
+            acc.push({
+              recordId: record.id,
+              // @ts-expect-error -- let's help debugging a bit here with an extra field
+              recordDebug: record.fields.Country,
+              choiceId: null,
+              field: person.id,
+            });
+          });
+        } else {
+          recordsInCategory.forEach((record) => {
+            acc.push({
+              recordId: record.id,
+              // @ts-expect-error -- let's help debugging a bit here with an extra field
+              recordDebug: record.fields.Country,
+              choiceId: category,
+              field: person.id,
+            });
+          });
+        }
+        return acc;
+      },
+      [] as AirtableUpdateRecordPayload[]
+    );
+    setRequestState({ type: "SENDING" });
+    const updatePromise = updateRecordVotes(updatePayload);
+    updatePromise
+      .then(() => {
+        setRequestState({ type: "SUCCESS" });
+      })
+      .catch((err) => {
+        console.error(err);
+        setRequestState({ type: "ERROR", message: err.toString() });
+      });
+  };
+
   return (
     <>
-      <label className="block pb-8">
+      <label className="block pb-4">
         <input
           type="checkbox"
           className="mr-2"
@@ -103,6 +164,29 @@ export const Ranking = ({ records: originalRecords, person }: Props) => {
         />
         Toggle small UI
       </label>
+      <button
+        onClick={sendUpdateVotes}
+        disabled={
+          // Only allow sending new requests when there are changes or to retry
+          !(requestState.type === "DIRTY" || requestState.type === "ERROR")
+        }
+        className="mb-4 rounded-full border border-purple-200 px-4 py-1 text-sm font-semibold text-blue-400 hover:border-transparent hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+      >
+        {(() => {
+          switch (requestState.type) {
+            case "FRESH":
+              return "Do some updates first";
+            case "DIRTY":
+              return "Save updates";
+            case "SENDING":
+              return "Sending... please wait.";
+            case "ERROR":
+              return "Oh no, an error happened! Please retry";
+            case "SUCCESS":
+              return "Saved! Feel free to do more updates";
+          }
+        })()}
+      </button>
       <DragDropContext onDragEnd={dragHandler}>
         <div
           className={`ml-4 mr-4 flex h-full w-full flex-shrink-0 overflow-auto`}
