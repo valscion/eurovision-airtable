@@ -3,7 +3,9 @@ import styles from "./page.module.css";
 import { getPeopleFromAirtable } from "./apiCalls";
 
 export default async function Home() {
-  const people = await getPeopleFromAirtable();
+  const people = await getPeopleFromAirtable({
+    rootUrl: "http://localhost:3000",
+  });
 
   return (
     <div className="flex flex-col items-center justify-center">
