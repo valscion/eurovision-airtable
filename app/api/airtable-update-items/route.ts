@@ -25,6 +25,8 @@ export async function PUT(request: Request) {
     [] as AirtableUpdateRecordPayload[][]
   );
 
+  let airtableRequestPromises = [];
+
   for (const bucket of bucketedUpdatePayloads) {
     const airtableFormat = bucket.map((item) => ({
       id: item.recordId,
@@ -38,11 +40,14 @@ export async function PUT(request: Request) {
         [item.field]: item.choiceId as string,
       },
     }));
-    const bucketResponse = await airtable
-      .base(baseId)
-      .table(tableId)
-      .update(airtableFormat);
+    // Push the request promises to an array so they happen in parallel
+    airtableRequestPromises.push(
+      airtable.base(baseId).table(tableId).update(airtableFormat)
+    );
   }
+
+  // And now we wait for all parallel requests to complete.
+  await Promise.all(airtableRequestPromises);
 
   return new Response(JSON.stringify({ message: "All good" }), {
     headers: {
