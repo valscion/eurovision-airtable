@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Lobster } from "next/font/google";
 import "./globals.css";
 
@@ -21,7 +22,7 @@ export default function RootLayout({
           <h1
             className={`${lobster.className} px-6 py-12 text-center text-5xl`}
           >
-            Viisukatsomo
+            <Link href="/">Viisukatsomo</Link>
           </h1>
           {children}
         </div>
