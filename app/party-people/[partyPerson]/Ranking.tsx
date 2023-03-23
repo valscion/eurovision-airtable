@@ -1,6 +1,11 @@
 "use client";
 
-import { type AirtableItem } from "@/app/types/airtable";
+import { updateRecordVotes } from "@/app/apiCalls";
+import {
+  AirtableUpdateRecordPayload,
+  type AirtablePerson,
+  type AirtableRecord,
+} from "@/app/types/airtable";
 
 import React from "react";
 import {
@@ -12,12 +17,20 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 interface Props {
-  items: Array<AirtableItem>;
+  records: Array<AirtableRecord>;
+  person: AirtablePerson;
 }
 
 type State = {
-  [key: string]: AirtableItem[];
+  [key: string]: AirtableRecord[];
 };
+
+type RequestState =
+  | { type: "FRESH" }
+  | { type: "DIRTY" }
+  | { type: "SENDING" }
+  | { type: "ERROR"; message: string }
+  | { type: "SUCCESS" };
 
 // a little function to help us with reordering the result
 const reorder = (list: any[], startIndex: number, endIndex: number): any[] => {
@@ -28,43 +41,63 @@ const reorder = (list: any[], startIndex: number, endIndex: number): any[] => {
   return result;
 };
 
-export const Ranking = ({ items: originalItems }: Props) => {
+export const Ranking = ({ records: originalRecords, person }: Props) => {
+  const initialGroups = person.options.reduce(
+    (acc, option) => {
+      const recordsInThisGroup = originalRecords.filter(
+        // @ts-ignore -- This works but I don't know TS well enough to permit this
+        (record) => record.fields[person.name] === option.name
+      );
+      return {
+        ...acc,
+        [option.name]: recordsInThisGroup,
+      };
+    },
+    {
+      NOT_RANKED: originalRecords.filter(
+        // @ts-ignore -- This works but I don't know TS well enough to permit this
+        (record) => record.fields[person.name] === undefined
+      ),
+    }
+  );
   const [isReordering, setIsReordering] = React.useState(false);
+  const [requestState, setRequestState] = React.useState<RequestState>({
+    type: "FRESH",
+  });
 
-  const [items, setItems] = React.useState<State>(
-    originalItems.reduce((acc, item, index) => {
-      const groupName = `idx_${Math.floor(index / 7)}`;
-      if (!acc[groupName]) {
-        acc[groupName] = [];
-      }
-      acc[groupName].push(item);
-      return acc;
-    }, {} as State)
+  const [records, setRecords] = React.useState<State>(initialGroups);
+
+  useUnsavedChangesWarning(
+    requestState.type !== "FRESH" && requestState.type !== "SUCCESS"
   );
 
   const dragHandler = (result: DropResult) => {
+    if (requestState.type === "SENDING") {
+      // Abort drag handling when request is in progress
+      return;
+    }
     if (!result.destination) {
       return;
     }
 
     const source = result.source;
     const destination = result.destination;
-    const current: AirtableItem[] = [...items[source.droppableId]];
-    const next: AirtableItem[] = [...items[destination.droppableId]];
-    const target: AirtableItem = current[source.index];
+    const current: AirtableRecord[] = [...records[source.droppableId]];
+    const next: AirtableRecord[] = [...records[destination.droppableId]];
+    const target: AirtableRecord = current[source.index];
 
     // moving to same list
     if (source.droppableId === destination.droppableId) {
-      const reordered: AirtableItem[] = reorder(
+      const reordered: AirtableRecord[] = reorder(
         current,
         source.index,
         destination.index
       );
       const result: State = {
-        ...items,
+        ...records,
         [source.droppableId]: reordered,
       };
-      setItems(result);
+      setRecords(result);
       return;
     }
 
@@ -76,16 +109,58 @@ export const Ranking = ({ items: originalItems }: Props) => {
     next.splice(destination.index, 0, target);
 
     const resultTwo: State = {
-      ...items,
+      ...records,
       [source.droppableId]: current,
       [destination.droppableId]: next,
     };
-    setItems(resultTwo);
+    setRecords(resultTwo);
+    setRequestState({ type: "DIRTY" });
     return;
   };
+
+  const sendUpdateVotes = () => {
+    const updatePayload = Object.entries(records).reduce(
+      (acc, [category, recordsInCategory]) => {
+        if (category === "NOT_RANKED") {
+          recordsInCategory.forEach((record) => {
+            acc.push({
+              recordId: record.id,
+              // @ts-expect-error -- let's help debugging a bit here with an extra field
+              recordDebug: record.fields.Country,
+              choiceId: null,
+              field: person.id,
+            });
+          });
+        } else {
+          recordsInCategory.forEach((record) => {
+            acc.push({
+              recordId: record.id,
+              // @ts-expect-error -- let's help debugging a bit here with an extra field
+              recordDebug: record.fields.Country,
+              choiceId: category,
+              field: person.id,
+            });
+          });
+        }
+        return acc;
+      },
+      [] as AirtableUpdateRecordPayload[]
+    );
+    setRequestState({ type: "SENDING" });
+    const updatePromise = updateRecordVotes(updatePayload);
+    updatePromise
+      .then(() => {
+        setRequestState({ type: "SUCCESS" });
+      })
+      .catch((err) => {
+        console.error(err);
+        setRequestState({ type: "ERROR", message: err.toString() });
+      });
+  };
+
   return (
     <>
-      <label className="block pb-8">
+      <label className="block pb-4">
         <input
           type="checkbox"
           className="mr-2"
@@ -93,11 +168,34 @@ export const Ranking = ({ items: originalItems }: Props) => {
         />
         Toggle small UI
       </label>
+      <button
+        onClick={sendUpdateVotes}
+        disabled={
+          // Only allow sending new requests when there are changes or to retry
+          !(requestState.type === "DIRTY" || requestState.type === "ERROR")
+        }
+        className="mb-4 rounded-full border border-purple-200 px-4 py-1 text-sm font-semibold text-blue-400 hover:border-transparent hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+      >
+        {(() => {
+          switch (requestState.type) {
+            case "FRESH":
+              return "Do some updates first";
+            case "DIRTY":
+              return "Save updates";
+            case "SENDING":
+              return "Sending... please wait.";
+            case "ERROR":
+              return "Oh no, an error happened! Please retry";
+            case "SUCCESS":
+              return "Saved! Feel free to do more updates";
+          }
+        })()}
+      </button>
       <DragDropContext onDragEnd={dragHandler}>
         <div
           className={`ml-4 mr-4 flex h-full w-full flex-shrink-0 overflow-auto`}
         >
-          {Object.entries(items).map(([columnId, list]) => (
+          {Object.entries(records).map(([columnId, list]) => (
             <Droppable droppableId={columnId} key={columnId}>
               {(provided: DroppableProvided) => (
                 <div
@@ -107,11 +205,17 @@ export const Ranking = ({ items: originalItems }: Props) => {
                     isReordering ? "mr-4 w-8" : "w-82 mr-6"
                   } flex flex-shrink-0 flex-col`}
                 >
-                  <div className="w-32 pb-2">{columnId}</div>
-                  {list.map((item, index) => (
+                  <div className="w-32 pb-2">
+                    {columnId === "NOT_RANKED"
+                      ? isReordering
+                        ? "???"
+                        : "Not ranked"
+                      : columnId}
+                  </div>
+                  {list.map((record, index) => (
                     <Draggable
-                      key={item.id}
-                      draggableId={item.id}
+                      key={record.id}
+                      draggableId={record.id}
                       index={index}
                     >
                       {(provided: DraggableProvided, draggableSnapshot) => (
@@ -120,8 +224,8 @@ export const Ranking = ({ items: originalItems }: Props) => {
                           ref={provided.innerRef}
                           {...provided.dragHandleProps}
                         >
-                          <SingleItem
-                            item={item}
+                          <SingleRecord
+                            record={record}
                             isReordering={isReordering}
                             isDragging={draggableSnapshot.isDragging}
                           />
@@ -139,12 +243,12 @@ export const Ranking = ({ items: originalItems }: Props) => {
   );
 };
 
-const SingleItem = ({
-  item,
+const SingleRecord = ({
+  record,
   isReordering,
   isDragging,
 }: {
-  item: AirtableItem;
+  record: AirtableRecord;
   isReordering: boolean;
   isDragging: boolean;
 }) => (
@@ -157,13 +261,30 @@ const SingleItem = ({
       }`}
     >
       <div className="font-medium text-gray-200">
-        {item.fields.Flag} {!isReordering && item.fields.Country}
+        {record.fields.Flag} {!isReordering && record.fields.Country}
       </div>
       {!isReordering && (
         <div className="mt-2 text-sm text-green-300">
-          {item.fields.Artist} — {item.fields.Song}
+          {record.fields.Artist} — {record.fields.Song}
         </div>
       )}
     </div>
   </>
 );
+
+function useUnsavedChangesWarning(hasUnsavedChanges: boolean) {
+  React.useEffect(() => {
+    if (!hasUnsavedChanges) return;
+    const beforeUnloadHandler = (event: BeforeUnloadEvent) => {
+      const warningMessage =
+        "You have not saved all your votes, are you sure you want to leave?";
+
+      event.returnValue = warningMessage;
+      return warningMessage;
+    };
+    window.addEventListener("beforeunload", beforeUnloadHandler);
+    return () => {
+      window.removeEventListener("beforeunload", beforeUnloadHandler);
+    };
+  }, [hasUnsavedChanges]);
+}

@@ -1,28 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import styles from "./page.module.css";
-
-type Person = {
-  name: string;
-  id: string;
-};
-type People = Array<Person>;
-
-async function getPeopleFromAirtable(): Promise<People> {
-  const res = await fetch("http://localhost:3000/api/airtable-party-people", {
-    cache: "no-store",
-  });
-  // The return value is *not* serialized
-  // You can return Date, Map, Set, etc.
-
-  // Recommendation: handle errors
-  if (!res.ok) {
-    // This will activate the closest `error.js` Error Boundary
-    throw new Error("Failed to fetch data");
-  }
-
-  return res.json();
-}
+import { getPeopleFromAirtable } from "./apiCalls";
 
 export default async function Home() {
   const people = await getPeopleFromAirtable();

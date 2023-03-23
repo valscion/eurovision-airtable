@@ -1,3 +1,4 @@
+import { AirtablePerson } from "@/app/types/airtable";
 import Airtable from "airtable";
 
 // A good enough type for our uses
@@ -38,9 +39,26 @@ type FieldType =
   | "lastModifiedBy"
   | "externalSyncSource";
 
+type SingleSelectField = {
+  id: string;
+  type: "singleSelect";
+  name: string;
+  description?: string;
+  options: {
+    choices: Array<{
+      id: string;
+      // More specific colors can be got from
+      // https://airtable.com/developers/web/api/field-model#select
+      // but for our uses, we don't care.
+      color?: string;
+      name: string;
+    }>;
+  };
+};
+
 type TableField = {
   id: string;
-  type?: FieldType;
+  type?: Exclude<FieldType, "singleSelect">;
   name: string;
   description?: string;
 };
@@ -53,7 +71,7 @@ type TableSchema = {
   name: string;
   description?: string;
 
-  fields: Array<TableField>;
+  fields: Array<SingleSelectField | TableField>;
 };
 
 export async function GET(request: Request) {
@@ -80,13 +98,16 @@ export async function GET(request: Request) {
     throw new Error("Table was not found, meta request seems to be broken");
   }
 
-  const people = tableSchema.fields
+  const people = tableSchema.fields.reduce((acc, field) => {
     // Only party people columns use the singleSelect type
-    .filter((field) => field.type === "singleSelect")
-    .map((field) => ({
+    if (field.type !== "singleSelect") return acc;
+    acc.push({
       id: field.id,
       name: field.name,
-    }));
+      options: field.options.choices,
+    });
+    return acc;
+  }, [] as AirtablePerson[]);
 
   return new Response(JSON.stringify(people), {
     headers: {

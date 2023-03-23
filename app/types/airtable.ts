@@ -1,4 +1,4 @@
-export type AirtableItem = {
+export type AirtableRecord = {
   /** The ID representing this record in Airtable */
   id: string;
   fields: {
@@ -13,4 +13,16 @@ export type AirtableItem = {
     "Video type": string;
     YouTube: string;
   };
+};
+
+export type AirtablePerson = {
+  id: string;
+  name: string;
+  options: Array<{ id: string; name: string }>;
+};
+
+export type AirtableUpdateRecordPayload = {
+  recordId: string;
+  field: string;
+  choiceId: string | null;
 };
