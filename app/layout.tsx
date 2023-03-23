@@ -1,6 +1,5 @@
 import { Lobster } from "next/font/google";
 import "./globals.css";
-import styles from "./layout.module.css";
 
 export const metadata = {
   title: "Eurovision Airtable",
@@ -18,8 +17,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div className={styles.appWrapper}>
-          <h1 className={`${lobster.className} ${styles.heading}`}>
+        <div className="h-screen">
+          <h1
+            className={`${lobster.className} px-6 py-12 text-center text-5xl`}
+          >
             Viisukatsomo
           </h1>
           {children}
