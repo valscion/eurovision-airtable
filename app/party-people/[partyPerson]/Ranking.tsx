@@ -67,6 +67,10 @@ export const Ranking = ({ records: originalRecords, person }: Props) => {
 
   const [records, setRecords] = React.useState<State>(initialGroups);
 
+  useUnsavedChangesWarning(
+    requestState.type !== "FRESH" && requestState.type !== "SUCCESS"
+  );
+
   const dragHandler = (result: DropResult) => {
     if (requestState.type === "SENDING") {
       // Abort drag handling when request is in progress
@@ -267,3 +271,20 @@ const SingleRecord = ({
     </div>
   </>
 );
+
+function useUnsavedChangesWarning(hasUnsavedChanges: boolean) {
+  React.useEffect(() => {
+    if (!hasUnsavedChanges) return;
+    const beforeUnloadHandler = (event: BeforeUnloadEvent) => {
+      const warningMessage =
+        "You have not saved all your votes, are you sure you want to leave?";
+
+      event.returnValue = warningMessage;
+      return warningMessage;
+    };
+    window.addEventListener("beforeunload", beforeUnloadHandler);
+    return () => {
+      window.removeEventListener("beforeunload", beforeUnloadHandler);
+    };
+  }, [hasUnsavedChanges]);
+}
