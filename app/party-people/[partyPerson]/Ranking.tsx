@@ -148,7 +148,7 @@ export const Ranking = ({ records: originalRecords, person }: Props) => {
     );
     setRequestState({ type: "SENDING" });
     const updatePromise = updateRecordVotes({
-      rootUrl: "http://localhost:3000",
+      rootUrl: location.origin,
       updates: updatePayload,
     });
     updatePromise
