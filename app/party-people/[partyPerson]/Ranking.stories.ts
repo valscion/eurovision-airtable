@@ -4,7 +4,7 @@ import { Ranking } from "./Ranking";
 // More on how to set up stories at: https://storybook.js.org/docs/7.0/react/writing-stories/introduction
 const meta: Meta<typeof Ranking> = {
   component: Ranking,
-  args: { items: [] },
+  args: { records: [] },
 };
 
 export default meta;
@@ -12,7 +12,7 @@ type Story = StoryObj<typeof Ranking>;
 
 export const Unranked: Story = {
   args: {
-    items: [
+    records: [
       {
         fields: {
           Country: "United Kingdom",

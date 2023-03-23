@@ -1,4 +1,4 @@
-export type AirtableItem = {
+export type AirtableRecord = {
   /** The ID representing this record in Airtable */
   id: string;
   fields: {

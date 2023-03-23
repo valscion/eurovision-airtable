@@ -1,6 +1,6 @@
 "use client";
 
-import { type AirtableItem } from "@/app/types/airtable";
+import { type AirtableRecord } from "@/app/types/airtable";
 
 import React from "react";
 import {
@@ -12,11 +12,11 @@ import {
   DropResult,
 } from "react-beautiful-dnd";
 interface Props {
-  items: Array<AirtableItem>;
+  records: Array<AirtableRecord>;
 }
 
 type State = {
-  [key: string]: AirtableItem[];
+  [key: string]: AirtableRecord[];
 };
 
 // a little function to help us with reordering the result
@@ -28,16 +28,16 @@ const reorder = (list: any[], startIndex: number, endIndex: number): any[] => {
   return result;
 };
 
-export const Ranking = ({ items: originalItems }: Props) => {
+export const Ranking = ({ records: originalRecords }: Props) => {
   const [isReordering, setIsReordering] = React.useState(false);
 
-  const [items, setItems] = React.useState<State>(
-    originalItems.reduce((acc, item, index) => {
+  const [records, setRecords] = React.useState<State>(
+    originalRecords.reduce((acc, record, index) => {
       const groupName = `idx_${Math.floor(index / 7)}`;
       if (!acc[groupName]) {
         acc[groupName] = [];
       }
-      acc[groupName].push(item);
+      acc[groupName].push(record);
       return acc;
     }, {} as State)
   );
@@ -49,22 +49,22 @@ export const Ranking = ({ items: originalItems }: Props) => {
 
     const source = result.source;
     const destination = result.destination;
-    const current: AirtableItem[] = [...items[source.droppableId]];
-    const next: AirtableItem[] = [...items[destination.droppableId]];
-    const target: AirtableItem = current[source.index];
+    const current: AirtableRecord[] = [...records[source.droppableId]];
+    const next: AirtableRecord[] = [...records[destination.droppableId]];
+    const target: AirtableRecord = current[source.index];
 
     // moving to same list
     if (source.droppableId === destination.droppableId) {
-      const reordered: AirtableItem[] = reorder(
+      const reordered: AirtableRecord[] = reorder(
         current,
         source.index,
         destination.index
       );
       const result: State = {
-        ...items,
+        ...records,
         [source.droppableId]: reordered,
       };
-      setItems(result);
+      setRecords(result);
       return;
     }
 
@@ -76,11 +76,11 @@ export const Ranking = ({ items: originalItems }: Props) => {
     next.splice(destination.index, 0, target);
 
     const resultTwo: State = {
-      ...items,
+      ...records,
       [source.droppableId]: current,
       [destination.droppableId]: next,
     };
-    setItems(resultTwo);
+    setRecords(resultTwo);
     return;
   };
   return (
@@ -97,7 +97,7 @@ export const Ranking = ({ items: originalItems }: Props) => {
         <div
           className={`ml-4 mr-4 flex h-full w-full flex-shrink-0 overflow-auto`}
         >
-          {Object.entries(items).map(([columnId, list]) => (
+          {Object.entries(records).map(([columnId, list]) => (
             <Droppable droppableId={columnId} key={columnId}>
               {(provided: DroppableProvided) => (
                 <div
@@ -108,10 +108,10 @@ export const Ranking = ({ items: originalItems }: Props) => {
                   } flex flex-shrink-0 flex-col`}
                 >
                   <div className="w-32 pb-2">{columnId}</div>
-                  {list.map((item, index) => (
+                  {list.map((record, index) => (
                     <Draggable
-                      key={item.id}
-                      draggableId={item.id}
+                      key={record.id}
+                      draggableId={record.id}
                       index={index}
                     >
                       {(provided: DraggableProvided, draggableSnapshot) => (
@@ -120,8 +120,8 @@ export const Ranking = ({ items: originalItems }: Props) => {
                           ref={provided.innerRef}
                           {...provided.dragHandleProps}
                         >
-                          <SingleItem
-                            item={item}
+                          <SingleRecord
+                            record={record}
                             isReordering={isReordering}
                             isDragging={draggableSnapshot.isDragging}
                           />
@@ -139,12 +139,12 @@ export const Ranking = ({ items: originalItems }: Props) => {
   );
 };
 
-const SingleItem = ({
-  item,
+const SingleRecord = ({
+  record,
   isReordering,
   isDragging,
 }: {
-  item: AirtableItem;
+  record: AirtableRecord;
   isReordering: boolean;
   isDragging: boolean;
 }) => (
@@ -157,11 +157,11 @@ const SingleItem = ({
       }`}
     >
       <div className="font-medium text-gray-200">
-        {item.fields.Flag} {!isReordering && item.fields.Country}
+        {record.fields.Flag} {!isReordering && record.fields.Country}
       </div>
       {!isReordering && (
         <div className="mt-2 text-sm text-green-300">
-          {item.fields.Artist} — {item.fields.Song}
+          {record.fields.Artist} — {record.fields.Song}
         </div>
       )}
     </div>

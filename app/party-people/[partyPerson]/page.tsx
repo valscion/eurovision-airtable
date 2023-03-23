@@ -1,4 +1,4 @@
-import { type AirtableItem } from "@/app/types/airtable";
+import { type AirtableRecord } from "@/app/types/airtable";
 import { Ranking } from "./Ranking";
 
 type Params = { partyPerson: string };
@@ -6,9 +6,7 @@ type Props = {
   params: Params;
 };
 
-type AirtableData = Array<AirtableItem>;
-
-async function getDataFromAirtable(): Promise<AirtableData> {
+async function getRecordsFromAirtable(): Promise<AirtableRecord[]> {
   const res = await fetch("http://localhost:3000/api/airtable-party-person", {
     cache: "no-store",
   });
@@ -25,14 +23,14 @@ async function getDataFromAirtable(): Promise<AirtableData> {
 }
 
 export default async function PartyPersonPage({ params }: Props) {
-  const data = await getDataFromAirtable();
+  const records = await getRecordsFromAirtable();
 
   return (
     <>
       <div className="text-3xl font-bold">
         PartyPerson: {params.partyPerson}
       </div>
-      <Ranking items={data} />
+      <Ranking records={records} />
     </>
   );
 }
