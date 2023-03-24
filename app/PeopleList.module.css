@@ -1,0 +1,69 @@
+.base {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.whoList {
+  composes: base;
+  list-style-type: none;
+}
+
+.whoListItem + .whoListItem {
+  margin-top: 1rem;
+}
+
+.blueGradient {
+  background-image: linear-gradient(
+    to right,
+    #5f2c82 0%,
+    #49a09d 51%,
+    #5f2c82 100%
+  );
+  padding: 15px 45px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: white;
+  border-radius: 10px;
+  display: block;
+}
+
+.blueGradient:hover {
+  background-position: right center;
+  color: #fff;
+  text-decoration: none;
+}
+
+.redGradient {
+  background-image: linear-gradient(
+    to right,
+    #c04848 0%,
+    #480048 51%,
+    #c04848 100%
+  );
+  padding: 15px 45px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: white;
+  border-radius: 10px;
+  display: block;
+}
+
+.redGradient:hover {
+  background-position: right center;
+  color: #fff;
+  text-decoration: none;
+}
+
+.whoButtonBase {
+  border: 3px solid whitesmoke;
+}
+
+.whoLinkOdd {
+  composes: blueGradient whoButtonBase;
+}
+.whoLinkEven {
+  composes: redGradient whoButtonBase;
+}

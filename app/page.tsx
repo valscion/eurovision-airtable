@@ -1,27 +1,16 @@
-import Link from "next/link";
+"use server";
+
+import { Suspense } from "react";
 import styles from "./page.module.css";
-import { getPeopleFromAirtable } from "./apiCalls";
+import { PeopleList } from "./PeopleList";
 
 export default async function Home() {
-  const people = await getPeopleFromAirtable({
-    rootUrl: "http://localhost:3000",
-  });
-
   return (
     <div className="flex flex-col items-center justify-center">
       <h2 className={styles.whoHeading}>Who are you?</h2>
-      <ul className={styles.whoList}>
-        {people.map((person, index) => (
-          <li key={person.id} className={styles.whoListItem}>
-            <Link
-              className={index % 2 ? styles.whoLinkEven : styles.whoLinkOdd}
-              href={`/party-people/${person.id}`}
-            >
-              {person.name}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <Suspense>
+        <PeopleList />
+      </Suspense>
     </div>
   );
 }

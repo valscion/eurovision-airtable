@@ -1,3 +1,6 @@
+"use client";
+
+import { use } from "react";
 import { Ranking } from "./Ranking";
 import { getPeopleFromAirtable, getRecordsFromAirtable } from "@/app/apiCalls";
 
@@ -6,13 +9,17 @@ type Props = {
   params: Params;
 };
 
-export default async function PartyPersonPage({ params }: Props) {
-  const records = await getRecordsFromAirtable({
-    rootUrl: "http://localhost:3000",
-  });
-  const people = await getPeopleFromAirtable({
-    rootUrl: "http://localhost:3000",
-  });
+export default function PartyPersonPage({ params }: Props) {
+  const records = use(
+    getRecordsFromAirtable({
+      rootUrl: location.origin,
+    })
+  );
+  const people = use(
+    getPeopleFromAirtable({
+      rootUrl: location.origin,
+    })
+  );
   const person = people.find((person) => person.id === params.partyPerson);
 
   if (!person) {
