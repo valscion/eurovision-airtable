@@ -4,7 +4,7 @@ import { getPeopleFromAirtable } from "./apiCalls";
 
 export default async function Home() {
   const people = await getPeopleFromAirtable({
-    rootUrl: "http://localhost:3000",
+    rootUrl: `http://localhost:${process.env.PORT || 3000}`,
   });
 
   return (
