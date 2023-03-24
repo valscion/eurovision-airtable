@@ -8,10 +8,10 @@ type Props = {
 
 export default async function PartyPersonPage({ params }: Props) {
   const records = await getRecordsFromAirtable({
-    rootUrl: `http://localhost:${process.env.PORT || 3000}`,
+    rootUrl: `http://127.0.0.1:${process.env.PORT || 3000}`,
   });
   const people = await getPeopleFromAirtable({
-    rootUrl: `http://localhost:${process.env.PORT || 3000}`,
+    rootUrl: `http://127.0.0.1:${process.env.PORT || 3000}`,
   });
   const person = people.find((person) => person.id === params.partyPerson);
 
