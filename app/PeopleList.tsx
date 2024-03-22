@@ -8,7 +8,7 @@ import { use } from "react";
 export function PeopleList() {
   const people = use(
     getPeopleFromAirtable({
-      rootUrl: location.origin,
+      rootUrl: location.origin || "http://localhost:3000",
     })
   );
 
