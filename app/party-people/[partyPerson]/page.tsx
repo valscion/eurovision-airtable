@@ -1,8 +1,9 @@
 "use client";
 
-import { use } from "react";
+import { useState, useEffect } from "react";
 import { Ranking } from "./Ranking";
 import { getPeopleFromAirtable, getRecordsFromAirtable } from "@/app/apiCalls";
+import { type AirtableRecord, type AirtablePerson } from "@/app/types/airtable";
 
 type Params = { partyPerson: string };
 type Props = {
@@ -10,16 +11,22 @@ type Props = {
 };
 
 export default function PartyPersonPage({ params }: Props) {
-  const records = use(
-    getRecordsFromAirtable({
-      rootUrl: location.origin,
-    })
-  );
-  const people = use(
-    getPeopleFromAirtable({
-      rootUrl: location.origin,
-    })
-  );
+  const [records, setRecords] = useState<AirtableRecord[] | null>(null);
+  const [people, setPeople] = useState<AirtablePerson[] | null>(null);
+
+  useEffect(() => {
+    getPeopleFromAirtable().then((people) => setPeople(people));
+    getRecordsFromAirtable().then((records) => setRecords(records));
+  }, []);
+
+  if (!records) {
+    return null;
+  }
+
+  if (!people) {
+    return null;
+  }
+
   const person = people.find((person) => person.id === params.partyPerson);
 
   if (!person) {
