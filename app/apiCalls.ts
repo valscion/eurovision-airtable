@@ -4,11 +4,8 @@ import {
   AirtableUpdateRecordPayload,
 } from "./types/airtable";
 
-export async function getPeopleFromAirtable({
-  rootUrl,
-}: {
-  rootUrl: string;
-}): Promise<AirtablePerson[]> {
+export async function getPeopleFromAirtable(): Promise<AirtablePerson[]> {
+  const rootUrl = location.origin;
   const res = await fetch(`${rootUrl}/api/airtable-party-people`);
   // The return value is *not* serialized
   // You can return Date, Map, Set, etc.
@@ -22,11 +19,8 @@ export async function getPeopleFromAirtable({
   return res.json();
 }
 
-export async function getRecordsFromAirtable({
-  rootUrl,
-}: {
-  rootUrl: string;
-}): Promise<AirtableRecord[]> {
+export async function getRecordsFromAirtable(): Promise<AirtableRecord[]> {
+  const rootUrl = location.origin;
   const res = await fetch(`${rootUrl}/api/airtable-party-person`, {
     cache: "no-store",
   });
@@ -43,12 +37,11 @@ export async function getRecordsFromAirtable({
 }
 
 export async function updateRecordVotes({
-  rootUrl,
   updates,
 }: {
-  rootUrl: string;
   updates: AirtableUpdateRecordPayload[];
 }): Promise<void> {
+  const rootUrl = location.origin;
   const res = await fetch(`${rootUrl}/api/airtable-update-items`, {
     method: "PUT",
     body: JSON.stringify(updates),

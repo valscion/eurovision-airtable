@@ -3,14 +3,18 @@
 import Link from "next/link";
 import styles from "./PeopleList.module.css";
 import { getPeopleFromAirtable } from "./apiCalls";
-import { use } from "react";
+import { type AirtablePerson } from "@/app/types/airtable";
+import { useState, useEffect } from "react";
 
 export function PeopleList() {
-  const people = use(
-    getPeopleFromAirtable({
-      rootUrl: location.origin,
-    })
-  );
+  const [people, setPeople] = useState<AirtablePerson[] | null>(null);
+  useEffect(() => {
+    getPeopleFromAirtable().then((people) => setPeople(people));
+  }, []);
+
+  if (!people) {
+    return null;
+  }
 
   return (
     <ul className={styles.whoList}>
