@@ -181,15 +181,15 @@ export const Ranking = ({ records: originalRecords, person }: Props) => {
         {(() => {
           switch (requestState.type) {
             case "FRESH":
-              return "Do some updates first";
+              return "Do some changes first";
             case "DIRTY":
-              return "Save updates";
+              return "Save changes";
             case "SENDING":
               return "Sending... please wait.";
             case "ERROR":
               return "Oh no, an error happened! Please retry";
             case "SUCCESS":
-              return "Saved! Feel free to do more updates";
+              return "Saved! Feel free to do more changes";
           }
         })()}
       </button>
