@@ -6,9 +6,9 @@ export async function PUT(request: Request) {
     apiKey: process.env.AIRTABLE_API_KEY,
   });
   // The Airtable base where all data lives in
-  const baseId = "appZo5EslvhMHndic";
+  const baseId = "appCLDjlqkm14rz6v";
   // The table ID which contains the wanted stuff
-  const tableId = "tbloo3DrzmMKRTrQX";
+  const tableId = "tbl1LBikEbRZeXNEg";
 
   // We assume that incoming request contains the payload in the expected format here.
   const updatePayload: AirtableUpdateRecordPayload[] = await request.json();
