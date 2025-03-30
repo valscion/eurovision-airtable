@@ -79,7 +79,7 @@ export async function GET(request: Request) {
     apiKey: process.env.AIRTABLE_API_KEY,
   });
   // The Airtable base where all data lives in
-  const baseId = "appCLDjlqkm14rz6v";
+  const baseId = "appySnnTMCRrRbkDo";
   // The table ID which contains the wanted stuff
   const tableId = "tbl1LBikEbRZeXNEg";
 
