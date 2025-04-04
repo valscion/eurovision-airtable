@@ -6,7 +6,7 @@ export async function PUT(request: Request) {
     apiKey: process.env.AIRTABLE_API_KEY,
   });
   // The Airtable base where all data lives in
-  const baseId = "appySnnTMCRrRbkDo";
+  const baseId = "app54cAu4Frt06Xk6";
   // The table ID which contains the wanted stuff
   const tableId = "tbl1LBikEbRZeXNEg";
 
